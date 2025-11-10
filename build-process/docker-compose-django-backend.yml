@@ -1,5 +1,5 @@
-version: '3.5'
-services:  
+version: "3.5"
+services:
   redis:
     image: redis:latest
     container_name: redis
@@ -10,7 +10,7 @@ services:
     # command: ["redis-server", "--requirepass", "cdhhwfjw8jdjs"]  # Require Redis password
     networks:
       - elastic
-    restart: always  
+    restart: always
 
   elasticsearch:
     image: elasticsearch:7.14.0
@@ -19,16 +19,15 @@ services:
       - ./data/elastic:/var/lib/elasticsearch/data
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g  # Limit heap to 1 GB
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g # Limit heap to 1 GB
     ports:
       - 9200:9200
     networks:
       - elastic
-    restart: always   # Ensures automatic restart
+    restart: always # Ensures automatic restart
 
-      
   postgres:
-    platform: 'linux/amd64'
+    platform: "linux/amd64"
     image: postgres:latest
     container_name: backend-postgres-production
     environment:
@@ -36,26 +35,26 @@ services:
       - POSTGRES_PASSWORD=382gsjhgds
       - POSTGRES_DB=codewithmuh_database
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - backend-postgres-production:/var/lib/postgresql/data/
+      - backend-postgres-production:/var/lib/postgresql
     networks:
       - elastic
-    restart: always    
+    restart: always
 
   backend:
-    platform: 'linux/amd64'
+    platform: "linux/amd64"
     image: backend-django:production
     container_name: backend-django-production
     build:
       context: ../
       dockerfile: ./build-process/docker-backend-django/Dockerfile
       args:
-        APP_ENVIRONMENT: 'Production'
+        APP_ENVIRONMENT: "Production"
     volumes:
       - ../:/home/codewithmuh-backend
     ports:
-      - '8080:8080'
+      - "8080:8080"
     env_file:
       - ./production.backend.env
     depends_on:
@@ -67,19 +66,19 @@ services:
     restart: always
 
   celery:
-    platform: 'linux/amd64'
+    platform: "linux/amd64"
     image: backend-django:production
     container_name: backend-django-celery-production
-    build: 
+    build:
       context: ../
       dockerfile: ./build-process/docker-backend-django/Dockerfile
       args:
-        APP_ENVIRONMENT: 'Production'
+        APP_ENVIRONMENT: "Production"
     volumes:
       - ../:/home/codewithmuh-backend
     # command: celery -A YOUR_APP worker -l info
     ports:
-      - '5555:5555'
+      - "5555:5555"
     env_file:
       - ./production.backend.env
     depends_on:
@@ -89,8 +88,7 @@ services:
       - C_FORCE_ROOT="true"
     networks:
       - elastic
-    restart: always  
-
+    restart: always
 
 volumes:
   backend-postgres-production:
