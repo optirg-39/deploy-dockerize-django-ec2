@@ -19,7 +19,8 @@ services:
       - ./data/elastic:/var/lib/elasticsearch/data
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g # Limit heap to 1 GB
+      # - ES_JAVA_OPTS=-Xms1g -Xmx1g # Limit heap to 1 GB
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - 9200:9200
     networks:
@@ -36,7 +37,7 @@ services:
       - POSTGRES_DB=codewithmuh_database
     ports:
       - "5432:5432"
-    volumes:
+    olumes:
       - backend-postgres-production:/var/lib/postgresql
     networks:
       - elastic
